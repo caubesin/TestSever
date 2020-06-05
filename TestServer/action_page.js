@@ -1,23 +1,15 @@
 var express = require('express');
-
 var app = express();
-
 var home_router = express.Router();
-
 var bodyParser = require('body-parser');
-
 var path = require('path');
-
-app.set("view engine", "ejs");
-
-app.set("views", path.resolve(__dirname, "views"));
-
-app.use(bodyParser.urlencoded({ extended: false }));
-
-app.use(bodyParser.json());
-
 var mysql = require('mysql');
 
+app.set("view engine", "ejs");
+app.set("views", path.resolve(__dirname, "views"));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+//Khai báo kết nối
 var conn = mysql.createConnection({
     host    : 'localhost',
     user    : 'root',
@@ -47,7 +39,7 @@ home_router.post('/action', (req, res) => {
     var temp = 0;
     conn.query(sql,(err,results) => {
         if (err) throw err;
-        results.forEach((i) => {
+        for (const i of results) {
             if ((user_name == i.user_name) || (passwd == i.passwd)) {
                 res.send("Tên tài khoản hoặc mật khẩu đã đươc sử dụng !");
                 return;
@@ -63,7 +55,7 @@ home_router.post('/action', (req, res) => {
                 console.log("Add Done !");
                 });
             };
-        });
+        };
     });
 });
 //Đăng nhập
@@ -78,14 +70,14 @@ home_router.post("/action_1",(req,res) => {
     var temp = 0;
     conn.query(sql,(err,results) => {
         if (err) throw err;
-        results.forEach((i) => {
+        for(const i of results) {
             if (i.user_name == user_name && i.passwd == passwd) {
                 res.send("Bạn đang đăng nhập với tài khoản " + user_name);
                 return;
             }
             else temp ++;
             if (temp == results.length) res.send("Đăng nhập thất bại");
-        });
+        };
     });
 });
 module.exports = home_router;
